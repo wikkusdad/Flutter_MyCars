@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'liked_cars.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,7 +25,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String selectedCar = "assets/images/BMW320.JPG";
+  List<Map<String, String>> likedCars = [];
+  String selectedCar = "assets/images/Passat.JPG";
   String carDescription = "Valitse auto";
 
   void changeCar(String carImage, String description) {
@@ -34,6 +36,25 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void toggleLike(String carImage, String description) {
+    setState(() {
+      final carInfo = {'image': carImage, 'description': description};
+      if (likedCars.contains(carInfo)) {
+        likedCars.remove(carInfo);
+      } else {
+        likedCars.add(carInfo);
+      }
+    });
+  }
+
+  void navigateToLikedCars() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => LikedCarsPage(likedCars: likedCars),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,6 +62,12 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Color.fromARGB(137, 58, 4, 51),
         title: Text('Autot'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.favorite),
+            onPressed: navigateToLikedCars,
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -107,6 +134,34 @@ class _MyHomePageState extends State<MyHomePage> {
                       fontWeight: FontWeight.bold,
                       fontSize: 18.0,
                     ),
+                  ),
+                  IconButton(
+                    iconSize: 36,
+                    icon: Icon(
+                        likedCars.contains({
+                          'image': selectedCar,
+                          'description': carDescription
+                        })
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: Color.fromARGB(255, 255, 0, 0)),
+                    onPressed: () => toggleLike(selectedCar, carDescription),
+                  ),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            'Tykkää',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 255, 0, 0),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
